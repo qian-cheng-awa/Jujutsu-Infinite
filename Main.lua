@@ -393,7 +393,7 @@ Tab:CreateToggle({
 	CurrentValue = KillAura,
 	Callback = function(Value)
 		KillAura = Value
-		writefile(FilePath.."KillAura", Value)
+		writefile(FilePath.."KillAura", tostring(Value))
 	end,
 })
 
@@ -407,7 +407,7 @@ Tab:CreateSlider({
 	Suffix = "%",
 	Callback = function(Value)
 		KillAuraN = Value
-		writefile(FilePath.."KillAuraN", Value)
+		writefile(FilePath.."KillAuraN", tostring(Value))
 	end,
 })
 
@@ -728,10 +728,10 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 	if FastSpin and not AutoSEC and not AutoBoss and not AutoInvestgations then
 		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Data"):WaitForChild("InnateSpin"):InvokeServer(tonumber(CurrentSlot.CurrentOption[1]))
 	end
-	if KillAura.CurrentValue then
+	if KillAura then
 		for _,Mob in ipairs(workspace.Objects.Mobs:GetChildren()) do
 			local Humanoid : Humanoid = Mob:FindFirstChild("Humanoid")
-			if Humanoid and Humanoid.Health > 0 and (Humanoid.Health / Humanoid.MaxHealth)*100 <= KillAuraN.CurrentValue then
+			if Humanoid and Humanoid.Health > 0 and (Humanoid.Health / Humanoid.MaxHealth)*100 <= KillAuraN then
 				Humanoid.Health = 0
 			end
 		end
