@@ -488,10 +488,11 @@ local AntiAfk = Tab:CreateToggle({
 	Callback = function(Value)
 	end,
 })
-
+local lootenabled = isfile(FilePath.."ShowLoot") and readfile(FilePath.."ShowLoot") == "true" or false
+LootUi.Enabled = lootenabled
 Tab:CreateToggle({
 	Name = "收益总览",
-	CurrentValue = isfile(FilePath.."ShowLoot") and readfile(FilePath.."ShowLoot") == "true" or false,
+	CurrentValue = ,
 	Callback = function(Value)
 		writefile(FilePath.."ShowLoot", tostring(Value))
 		LootUi.Enabled = Value
