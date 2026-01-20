@@ -499,6 +499,9 @@ Tab:CreateToggle({
 })
 
 local AutoBoss = isfile(FilePath.."AutoBoss") and readfile(FilePath.."AutoBoss") == "true" or false
+if game.PlaceId == 10450270085 then
+	AutoBoss = false
+end
 Tab:CreateToggle({
 	Name = "自动BOSS",
 	CurrentValue = AutoBoss,
@@ -508,7 +511,9 @@ Tab:CreateToggle({
 	end,
 })
 
-
+if game.PlaceId == 10450270085 then
+	AutoSEC = false
+end
 Tab:CreateToggle({
 	Name = "自动六眼灾难",
 	CurrentValue = AutoSEC,
@@ -519,6 +524,9 @@ Tab:CreateToggle({
 })
 
 local AutoInvestgations = isfile(FilePath.."AutoInvestgations") and readfile(FilePath.."AutoInvestgations") == "true" or false
+if game.PlaceId == 10450270085 then
+	AutoInvestgations = false
+end
 Tab:CreateToggle({
 	Name = "自动调查",
 	CurrentValue = AutoInvestgations,
@@ -924,9 +932,6 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			end
 		else
 			Character:PivotTo(workspace.Objects.Mobs:GetChildren()[1]:GetPivot())
-			FirstGlobal.domainMeter = 100
-			UseSkill("Incomplete Domain")
-			task.wait()
 			BlackFlash()
 		end
 	elseif AutoInvestgations then
