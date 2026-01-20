@@ -80,8 +80,10 @@ local Cooldowns = {}
 local function UseSkill(Skill)
 	if not Skill then return end
 	if Cooldowns[Skill] then return end
-
-	Cooldowns[Skill] = game:GetService("ReplicatedStorage").Skills:FindFirstChild(Skill):FindFirstChild("Cooldown") and game:GetService("ReplicatedStorage").Skills[Skill].Cooldown.Value or 0
+	
+	if Tool and Tool.Parent ~= Character then  
+		Cooldowns[Skill] = game:GetService("ReplicatedStorage").Skills:FindFirstChild(Skill):FindFirstChild("Cooldown") and game:GetService("ReplicatedStorage").Skills[Skill].Cooldown.Value or 0
+	end
 
 	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("Skill"):FireServer(Skill)
 end
