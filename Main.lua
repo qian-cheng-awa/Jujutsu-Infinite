@@ -9,22 +9,22 @@ if AutoSEC then
 		repeat
 			task.wait()
 		until game.Loaded
-		
+
 		while task.wait(1) do
 			pcall(function()
 				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Raids"):WaitForChild("CreateLobby"):InvokeServer("Boss","Six Eyed Calamity",1,"Nightmare","bxnb66")
 				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Raids"):WaitForChild("StartLobby"):InvokeServer("Boss")
 			end)
 		end
-		
+
 		local CreateLobby = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Raids"):WaitForChild("CreateLobby")
 		local Start = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Raids"):WaitForChild("StartLobby")
-		
+
 		if CreateLobby:InvokeServer("Boss","Six Eyed Calamity",1,"Nightmare","bxnb66") then
 			task.wait()
 			Start:InvokeServer("Boss")
 		end
-		
+
 		return
 	elseif game.PlaceId == 16379657109 then
 		game:GetService("TeleportService"):Teleport(90925658700602,game:GetService("Players").LocalPlayer)
@@ -370,7 +370,7 @@ local SECAnimations = {
 	Purple2 = "rbxassetid://89669553803614",
 	Stun2 = "rbxassetid://104529802805115",
 	HandQTEA = "rbxassetid://134072664791497",
-	
+
 }
 
 local SEC = workspace.Objects.Mobs:FindFirstChild("Six Eyed Calamity")
@@ -407,7 +407,7 @@ Tab:CreateInput({
 	Callback = function(Value)
 		local num = tonumber(Value)
 		if not num then return end
-		
+
 		FirstGlobal.maxFocus = num
 	end,
 })
@@ -533,7 +533,7 @@ Tab:CreateButton({
 
 game:GetService("Players").LocalPlayer.Idled:Connect(function()
 	if not AntiAfk.CurrentValue then return end
-	
+
 	local MousePos = game:GetService("Players").LocalPlayer.PlayerGui.Main.Frame.BottomLeft.CurrencyFrame.AbsolutePosition
 	VirtualInputManager:SendMouseButtonEvent(MousePos.X, MousePos.Y, 0, true, game, 0)
 	task.wait()
@@ -578,11 +578,11 @@ local function AddUi(Ui)
 	local Slider = Ui.Timing.Frame.Slider
 
 	Aura.Size = UDim2.fromScale(10,1)
-	
+
 	local MousePos = Slider.AbsolutePosition
 	VirtualInputManager:SendMouseButtonEvent(MousePos.X, MousePos.Y, 0, true, game, 0)
 	VirtualInputManager:SendMouseButtonEvent(MousePos.X, MousePos.Y, 0, false, game, 0)
-	
+
 	return true
 end
 
@@ -616,8 +616,6 @@ local function getnearstplayer(p)
 	return closestDistance
 end
 
-local lastpurple = false
-local delta = 0
 local InHandQteTime = 0
 
 local function getnearst(path:Instance)
@@ -669,16 +667,16 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			end
 		end
 	end
-	
+
 	SEC = workspace.Objects.Mobs:FindFirstChild("Six Eyed Calamity")
 	Character = Player.Character
 	if not Character then return end
-	
+
 	if AutoSEC or AutoBoss or AutoInvestgations then
 		if not Character:FindFirstChild("Archored") then
 			Instance.new("BodyVelocity",Character).Name = "Archored"
 		end
-		
+
 		Player.PlayerGui.Loot.Enabled = false
 
 		for _,v in ipairs(Character:GetDescendants()) do
@@ -686,7 +684,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 				v.CanCollide = false
 			end
 		end
-		
+
 		if #workspace.Objects.Drops:GetChildren() >= 1 then
 			for i,v in ipairs(workspace.Objects.Drops:GetChildren()) do
 				v:PivotTo(Character:GetPivot())
@@ -697,7 +695,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			end
 		end
 	end
-	
+
 	if AutoSEC or AutoBoss then
 		if Player.PlayerGui.ReadyScreen.Enabled then
 			task.delay(5,function()
@@ -713,23 +711,23 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 
 		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Client"):WaitForChild("StorylineDialogueSkip"):FireServer()
 	end
-	
+
 	if AutoSEC and SEC then
 		if AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.QTE) then
 			InHandQteTime = 10
 		end
-		
+
 		if Player.Backpack:FindFirstChild("Infinity Shard") then
 			Character:FindFirstChild("Humanoid"):EquipTool(Player.Backpack["Infinity Shard"])
 			UseSkill("Drop Shard")
 		elseif Player.Character:FindFirstChild("Infinity Shard") then
 			UseSkill("Drop Shard")
 		end
-		
+
 		local red : AnimationTrack = Find(SECAnimations.redcharge)
 		local purple : AnimationTrack = Find(SECAnimations.purple)
 		local stun : AnimationTrack = Find(SECAnimations.Stun)
-		
+
 		if (stun and stun.TimePosition >= 3 - Player:GetNetworkPing()) or Find(SECAnimations.Stun2) then
 			local bosspos = SEC.Costume["UMesh_Skin_ZSphere_3.004"].Root.LowerTorso.UpperTorso["UpperTorso.001"]["UpperTorso.002"].WorldCFrame
 			Character:PivotTo(bosspos*CFrame.new(0,0,-50))
@@ -745,7 +743,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 		elseif red and red.TimePosition >= (4.5-Player:GetNetworkPing()) or Find(SECAnimations.redfire) then
 			Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
 			return
-		elseif purple and purple.TimePosition >= (5-Player:GetNetworkPing()) and lastpurple then
+		elseif purple and purple.TimePosition >= (5-Player:GetNetworkPing()) then
 			for i,v in ipairs(workspace.Objects.Locations.PurpleCover:GetChildren()) do
 				if v.Transparency == 0 then
 					Character:PivotTo(v.CFrame)
@@ -765,7 +763,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 				end
 			end
 		end
-		
+
 		local handa : AnimationTrack = Find(SECAnimations.hand)
 		local HandQTE : AnimationTrack = Find(SECAnimations.HandQTEA)
 
@@ -823,7 +821,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			if #workspace.Objects.Drops:GetChildren() >= 1 then
 				return
 			end
-			
+
 			game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("Skill"):FireServer("Demon Vessel: Switch")
 
 			if workspace.Objects.Spawns:FindFirstChild("BossSpawn") then
@@ -842,7 +840,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 				v.Humanoid.Health = 0
 			end
 		end
-		
+
 		if #workspace.Objects.MissionItems:GetChildren() >= 1 then
 			local ACharacter = getnearst(workspace.Objects.MissionItems)
 			local p : ProximityPrompt = ACharacter:FindFirstChild("PickUp")
