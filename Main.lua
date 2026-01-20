@@ -401,7 +401,7 @@ local KillAuraN = isfile(FilePath.."KillAuraN") and tonumber(readfile(FilePath..
 
 Tab:CreateSlider({
 	Name = "杀戮光环斩杀线",
-	Range = {Min = 0, Max = 100},
+	Range = {0, 100},
 	Increment = 1,
 	CurrentValue = KillAuraN,
 	Suffix = "%",
