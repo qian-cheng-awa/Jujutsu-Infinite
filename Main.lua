@@ -924,6 +924,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			Character:PivotTo(workspace.Objects.Mobs:GetChildren()[1]:GetPivot())
 			FirstGlobal.domainMeter = 100
 			UseSkill("Incomplete Domain")
+			task.wait()
 			BlackFlash()
 		end
 	elseif AutoInvestgations then
