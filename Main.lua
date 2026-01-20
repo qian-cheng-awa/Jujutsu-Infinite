@@ -531,6 +531,63 @@ Tab:CreateButton({
 	end,
 })
 
+Tab = Window:CreateTab("免费通行证", "airplay")
+
+Tab:CreateButton({
+	Name = "领取交流会高级通行证奖励",
+	Callback = function()
+		for i=1,Player.ReplicatedData.exchangeData.battlepassTier.Value do
+			game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Data"):WaitForChild("ClaimBattlepassReward"):InvokeServer("premium",i)
+		end
+	end,
+})
+
+local Innates = {}
+local T = {}
+
+for i,Value in ipairs(Player.ReplicatedData.innatebag:GetChildren()) do
+	if not Value.Value then continue end
+	local TE = LocalizationService:GetTranslatorForPlayer(Player):Translate(Player.PlayerGui,Value.Name)
+	Innates[TE] = Value.Name
+	T[i] = TE
+end
+
+local CurrentInnate = Tab:CreateDropdown({
+	Name = "选择术士",
+	Options = T,
+	CurrentOption = {""},
+	MultipleOptions = false,
+	Callback = function(Value)
+	end,
+})
+
+local CurrentSlot = Tab:CreateDropdown({
+	Name = "选择槽位",
+	Options = {"1","2","3","4"},
+	CurrentOption = {"1"},
+	MultipleOptions = false,
+	Callback = function(Value)
+	end,
+})
+
+Tab:CreateButton({
+	Name = "替换选择的槽位",
+	Callback = function()
+		if CurrentInnate.CurrentOption[1] == "" then return end
+
+		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Data"):WaitForChild("SetInnateBag"):FireServer(
+			tonumber(CurrentSlot.CurrentOption[1]),
+			Innates[CurrentInnate.CurrentOption[1]]
+		)
+	end,
+})
+
+local FastSpin = Tab:CreateToggle({
+	Name = "光速抽奖（选择的槽位）",
+	Callback = function(Value)
+	end,
+})
+
 game:GetService("Players").LocalPlayer.Idled:Connect(function()
 	if not AntiAfk.CurrentValue then return end
 
@@ -643,6 +700,9 @@ local function getnearst(path:Instance)
 end
 
 game:GetService("RunService").RenderStepped:Connect(function(dt)
+	if FastSpin and not AutoSEC and not AutoBoss and not AutoInvestgations then
+		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Data"):WaitForChild("InnateSpin"):InvokeServer(tonumber(CurrentSlot.CurrentOption[1]))
+	end
 	for i,v in pairs(Cooldowns) do
 		Cooldowns[i] -= dt
 		if Cooldowns[i] <= 0 then
