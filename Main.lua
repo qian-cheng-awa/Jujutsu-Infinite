@@ -386,6 +386,31 @@ local Tab : {
 	CreateDropdown : (self : any, {Name : string, Callback : (Value : string) -> (), Options : { any }, CurrentOption : { any }, MultipleOptions : boolean}) -> ({CurrentOption : string, Refresh : (Options : { any }) -> (), Set : ({ any })})
 } = Window:CreateTab("主要", "airplay")
 
+local KillAura = isfile(FilePath.."KillAura") and readfile(FilePath.."KillAura") == "true" or false
+
+Tab:CreateToggle({
+	Name = "杀戮光环",
+	CurrentValue = KillAura,
+	Callback = function(Value)
+		KillAura = Value
+		writefile(FilePath.."KillAura", Value)
+	end,
+})
+
+local KillAuraN = isfile(FilePath.."KillAuraN") and tonumber(readfile(FilePath.."KillAuraN")) or 20
+
+Tab:CreateSlider({
+	Name = "杀戮光环斩杀线",
+	Range = {Min = 0, Max = 100},
+	Increment = 1,
+	CurrentValue = KillAuraN,
+	Suffix = "%",
+	Callback = function(Value)
+		KillAuraN = Value
+		writefile(FilePath.."KillAuraN", Value)
+	end,
+})
+
 Tab:CreateButton({
 	Name = "补充领域条",
 	Callback = function()
@@ -702,6 +727,14 @@ end
 game:GetService("RunService").RenderStepped:Connect(function(dt)
 	if FastSpin and not AutoSEC and not AutoBoss and not AutoInvestgations then
 		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Data"):WaitForChild("InnateSpin"):InvokeServer(tonumber(CurrentSlot.CurrentOption[1]))
+	end
+	if KillAura.CurrentValue then
+		for _,Mob in ipairs(workspace.Objects.Mobs:GetChildren()) do
+			local Humanoid : Humanoid = Mob:FindFirstChild("Humanoid")
+			if Humanoid and Humanoid.Health > 0 and (Humanoid.Health / Humanoid.MaxHealth)*100 <= KillAuraN.CurrentValue then
+				Humanoid.Health = 0
+			end
+		end
 	end
 	for i,v in pairs(Cooldowns) do
 		Cooldowns[i] -= dt
