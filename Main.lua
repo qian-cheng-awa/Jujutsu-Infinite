@@ -328,7 +328,7 @@ SkillsBar.ChildRemoved:Connect(function(a)
 	if a:GetAttribute("Removing") then
 		return
 	end
-	if Tool.Parent == Player.Character then
+	if Tool and Tool.Parent == Player.Character then
 		UpdateSkillsBar()
 	end
 end)
@@ -922,6 +922,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			end
 		else
 			Character:PivotTo(workspace.Objects.Mobs:GetChildren()[1]:GetPivot())
+			FirstGlobal.domainMeter = 100
 			UseSkill("Incomplete Domain")
 			BlackFlash()
 		end
