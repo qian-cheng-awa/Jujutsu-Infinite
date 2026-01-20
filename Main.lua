@@ -922,7 +922,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			end
 		else
 			Character:PivotTo(workspace.Objects.Mobs:GetChildren()[1]:GetPivot())
-
+			UseSkill("Incomplete Domain")
 			BlackFlash()
 		end
 	elseif AutoInvestgations then
