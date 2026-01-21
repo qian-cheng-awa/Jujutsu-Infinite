@@ -80,7 +80,7 @@ local Cooldowns = {}
 local function UseSkill(Skill)
 	if not Skill then return end
 	if Cooldowns[Skill] then return end
-	
+
 	if Tool and Tool.Parent ~= Character then  
 		Cooldowns[Skill] = game:GetService("ReplicatedStorage").Skills:FindFirstChild(Skill):FindFirstChild("Cooldown") and game:GetService("ReplicatedStorage").Skills[Skill].Cooldown.Value or 0
 	end
@@ -524,6 +524,20 @@ Tab:CreateToggle({
 	end,
 })
 
+local FastSEC = isfile(FilePath.."FastSEC") and readfile(FilePath.."FastSEC") == "true" or false
+if game.PlaceId == 10450270085 then
+	FastSEC = false
+end
+Tab:CreateToggle({
+	Name = "快速六眼",
+	CurrentValue = FastSEC,
+	Callback = function(Value)
+		writefile(FilePath.."FastSEC", tostring(Value))
+		FastSEC = Value
+	end,
+})
+
+
 local AutoInvestgations = isfile(FilePath.."AutoInvestgations") and readfile(FilePath.."AutoInvestgations") == "true" or false
 if game.PlaceId == 10450270085 then
 	AutoInvestgations = false
@@ -817,106 +831,127 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 	end
 
 	if AutoSEC and SEC then
-		if AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.QTE) then
-			InHandQteTime = 10
-		end
-
-		if Player.Backpack:FindFirstChild("Infinity Shard") then
-			Character:FindFirstChild("Humanoid"):EquipTool(Player.Backpack["Infinity Shard"])
-			UseSkill("Drop Shard")
-		elseif Player.Character:FindFirstChild("Infinity Shard") then
-			UseSkill("Drop Shard")
-		end
-
-		local red : AnimationTrack = Find(SECAnimations.redcharge)
-		local purple : AnimationTrack = Find(SECAnimations.purple)
-		local stun : AnimationTrack = Find(SECAnimations.Stun)
-
-		if (stun and stun.TimePosition >= 3 - Player:GetNetworkPing()) or Find(SECAnimations.Stun2) then
-			local bosspos = SEC.Costume["UMesh_Skin_ZSphere_3.004"].Root.LowerTorso.UpperTorso["UpperTorso.001"]["UpperTorso.002"].WorldCFrame
-			Character:PivotTo(bosspos*CFrame.new(0,0,-50))
-			workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position,bosspos.Position)
-			game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("Skill"):FireServer("Demon Vessel: Switch")
-
-			game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ApplyBlackFlashToNextHitbox"):FireServer(2)
-			game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("M2"):FireServer(2)
-			return
-		elseif Find(SECAnimations.Purple2) then
-			Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
-			return
-		elseif red and red.TimePosition >= (4.5-Player:GetNetworkPing()) or Find(SECAnimations.redfire) then
-			Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
-			return
-		elseif purple and purple.TimePosition >= (5-Player:GetNetworkPing()) then
-			for i,v in ipairs(workspace.Objects.Locations.PurpleCover:GetChildren()) do
-				if v.Transparency == 0 then
-					Character:PivotTo(v.CFrame)
-					return
-				end
-			end
-		end
-
-		if purple then
-			if #workspace.Objects.Locations.PurpleCover:GetChildren() > 0 then
-				for i,v in ipairs(workspace.Objects.Locations.PurpleCover:GetChildren()) do
-					if v:FindFirstChild("AngularVelocity") and v.CloudParticles.Enabled then
-						Character:PivotTo(v.CFrame)
-						Combat:WaitForChild("Block"):FireServer(true)
-						return
-					end
-				end
-			end
-		end
-
-		local handa : AnimationTrack = Find(SECAnimations.hand)
-		local HandQTE : AnimationTrack = Find(SECAnimations.HandQTEA)
-
-		if handa then
-			Combat:WaitForChild("Block"):FireServer(true)
-			Combat:WaitForChild("Block"):FireServer(false)
-		elseif HandQTE then
-			Character.HumanoidRootPart.Anchored = false
-			if InHandQteTime >= 7 then
-				AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
-			else
-				InHandQteTime += dt
-			end
-		elseif not handa and not HandQTE then
-			AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
-			InHandQteTime = 0
-		end
-
-		if (Player.PlayerGui.Main.Frame.BottomMiddle:FindFirstChild("DomainBar") or Player.PlayerGui.Main.Frame.BottomLeft.DomainBar).TextLabel.Text:split(" ")[2] == "100%" then
-			Combat:WaitForChild("Skill"):FireServer("Domain Expansion: Unlimited Void")
-			return
-		end
-
-		for i,Obj:Part in ipairs(workspace.Objects.Effects:GetChildren()) do
-			if Obj.Name == "SECEye" then
-				Obj:Destroy()
-			elseif Obj.Name == "SECBlueBurst" and not purple then
-				local power:Part = workspace.Objects.Effects:FindFirstChild("SECEnergyImbue")
-				if Obj:FindFirstChild("Warning") and Obj.Warning.Enabled then
-					if (Obj.Position - Character:GetPivot().Position).Magnitude <= 100 then
-						game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("Block"):FireServer(true)
-						Character:PivotTo(Obj.CFrame)
-						return
-					end
-				else
-					Character:PivotTo(SEC:GetPivot()*CFrame.new(350,-150,50))
-					return
-				end
-			elseif Obj.Name == "SECEnergyImbue" and Obj:FindFirstChild("Ambience") and Obj.Ambience.Volume > 0 and Obj.Ambience.IsPlaying then
-				Character:PivotTo(get().WeldToPart.CFrame*CFrame.new(0,-50,0))
+		if FastSEC then
+			local stun : AnimationTrack = Find(SECAnimations.Stun)
+			if (stun and stun.TimePosition >= 3 - Player:GetNetworkPing()) or Find(SECAnimations.Stun2) then
+				local bosspos = SEC.Costume["UMesh_Skin_ZSphere_3.004"].Root.LowerTorso.UpperTorso["UpperTorso.001"]["UpperTorso.002"].WorldCFrame
+				Character:PivotTo(bosspos*CFrame.new(0,0,-50))
+				workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position,bosspos.Position)
+				UseSkill("Demon Vessel: Switch")
+				UseSkill("Maximum: True Sphere")
+				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ApplyBlackFlashToNextHitbox"):FireServer(2)
+				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("M2"):FireServer()
 				return
 			end
-		end
+			if game:GetService("ReplicatedStorage"):FindFirstChild("GlobalDomainMeter") then
+				if game:GetService("ReplicatedStorage"):FindFirstChild("GlobalDomainMeter").Value < 100 then
+					UseSkill("Test Domain Malevolent")
+				else
+					UseSkill("Domain Expansion: Unlimited Void")
+				end
+			end
+		else
+			if AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.QTE) then
+				InHandQteTime = 10
+			end
 
-		if workspace.Objects.Effects:FindFirstChild("SECEnergyCharge") then
-			for i,v in ipairs(workspace.Objects.Effects:GetChildren()) do
-				if v.Name == "SECEnergyCharge" and v:FindFirstChild("BillboardGui") and v.BillboardGui.Enabled and getnearstplayer(v) > v.Size.Y/2 then
-					Character:PivotTo(v.CFrame*CFrame.new(0,1,0))
+			if Player.Backpack:FindFirstChild("Infinity Shard") then
+				Character:FindFirstChild("Humanoid"):EquipTool(Player.Backpack["Infinity Shard"])
+				UseSkill("Drop Shard")
+			elseif Player.Character:FindFirstChild("Infinity Shard") then
+				UseSkill("Drop Shard")
+			end
+
+			local red : AnimationTrack = Find(SECAnimations.redcharge)
+			local purple : AnimationTrack = Find(SECAnimations.purple)
+			local stun : AnimationTrack = Find(SECAnimations.Stun)
+
+			if (stun and stun.TimePosition >= 3 - Player:GetNetworkPing()) or Find(SECAnimations.Stun2) then
+				local bosspos = SEC.Costume["UMesh_Skin_ZSphere_3.004"].Root.LowerTorso.UpperTorso["UpperTorso.001"]["UpperTorso.002"].WorldCFrame
+				Character:PivotTo(bosspos*CFrame.new(0,0,-50))
+				workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position,bosspos.Position)
+				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("Skill"):FireServer("Demon Vessel: Switch")
+
+				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ApplyBlackFlashToNextHitbox"):FireServer(2)
+				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("M2"):FireServer(2)
+				return
+			elseif Find(SECAnimations.Purple2) then
+				Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
+				return
+			elseif red and red.TimePosition >= (4.5-Player:GetNetworkPing()) or Find(SECAnimations.redfire) then
+				Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
+				return
+			elseif purple and purple.TimePosition >= (5-Player:GetNetworkPing()) then
+				for i,v in ipairs(workspace.Objects.Locations.PurpleCover:GetChildren()) do
+					if v.Transparency == 0 then
+						Character:PivotTo(v.CFrame)
+						return
+					end
+				end
+			end
+
+			if purple then
+				if #workspace.Objects.Locations.PurpleCover:GetChildren() > 0 then
+					for i,v in ipairs(workspace.Objects.Locations.PurpleCover:GetChildren()) do
+						if v:FindFirstChild("AngularVelocity") and v.CloudParticles.Enabled then
+							Character:PivotTo(v.CFrame)
+							Combat:WaitForChild("Block"):FireServer(true)
+							return
+						end
+					end
+				end
+			end
+
+			local handa : AnimationTrack = Find(SECAnimations.hand)
+			local HandQTE : AnimationTrack = Find(SECAnimations.HandQTEA)
+
+			if handa then
+				Combat:WaitForChild("Block"):FireServer(true)
+				Combat:WaitForChild("Block"):FireServer(false)
+			elseif HandQTE then
+				Character.HumanoidRootPart.Anchored = false
+				if InHandQteTime >= 7 then
+					AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
+				else
+					InHandQteTime += dt
+				end
+			elseif not handa and not HandQTE then
+				AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
+				InHandQteTime = 0
+			end
+
+			if (Player.PlayerGui.Main.Frame.BottomMiddle:FindFirstChild("DomainBar") or Player.PlayerGui.Main.Frame.BottomLeft.DomainBar).TextLabel.Text:split(" ")[2] == "100%" then
+				Combat:WaitForChild("Skill"):FireServer("Domain Expansion: Unlimited Void")
+				return
+			end
+
+			for i,Obj:Part in ipairs(workspace.Objects.Effects:GetChildren()) do
+				if Obj.Name == "SECEye" then
+					Obj:Destroy()
+				elseif Obj.Name == "SECBlueBurst" and not purple then
+					local power:Part = workspace.Objects.Effects:FindFirstChild("SECEnergyImbue")
+					if Obj:FindFirstChild("Warning") and Obj.Warning.Enabled then
+						if (Obj.Position - Character:GetPivot().Position).Magnitude <= 100 then
+							game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("Block"):FireServer(true)
+							Character:PivotTo(Obj.CFrame)
+							return
+						end
+					else
+						Character:PivotTo(SEC:GetPivot()*CFrame.new(350,-150,50))
+						return
+					end
+				elseif Obj.Name == "SECEnergyImbue" and Obj:FindFirstChild("Ambience") and Obj.Ambience.Volume > 0 and Obj.Ambience.IsPlaying then
+					Character:PivotTo(get().WeldToPart.CFrame*CFrame.new(0,-50,0))
 					return
+				end
+			end
+
+			if workspace.Objects.Effects:FindFirstChild("SECEnergyCharge") then
+				for i,v in ipairs(workspace.Objects.Effects:GetChildren()) do
+					if v.Name == "SECEnergyCharge" and v:FindFirstChild("BillboardGui") and v.BillboardGui.Enabled and getnearstplayer(v) > v.Size.Y/2 then
+						Character:PivotTo(v.CFrame*CFrame.new(0,1,0))
+						return
+					end
 				end
 			end
 		end
