@@ -815,8 +815,8 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 	if not Character then return end
 
 	if AutoSEC or AutoBoss or AutoInvestgations then
-		if not Character:FindFirstChild("Archored") then
-			local a = Instance.new("BodyVelocity",Character)
+		if not Character.PrimaryPart:FindFirstChild("Archored") then
+			local a = Instance.new("BodyVelocity",Character.PrimaryPart)
 			a.Name = "Archored"
 			a.Velocity = Vector3.new(0,0,0)
 			a.MaxForce = Vector3.new(1,1,1)*math.huge
