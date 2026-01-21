@@ -1,5 +1,5 @@
 if identifyexecutor() == "Delta" then
-	getrenv().RunInDeltaUi = readfile("TDM/DeltaUiEnabled") == "true"
+	getrenv().RunInDeltaUi = true
 end
 queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/qian-cheng-awa/Jujutsu-Infinite/refs/heads/main/Main.lua"))
 
@@ -813,10 +813,10 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 	
 	if ToggleCurseTool and CurseTool then
 		local Equipped = Player.ReplicatedData.primary.Value
-		
-		if Equipped and Equipped ~= "" then
+		if Equipped and Equipped ~= "" and Equipped ~= CurseTool then
 			local Tool : Tool = Player.Backpack:FindFirstChild(Equipped) or Player.Character:FindFirstChild(Equipped)
 			if Tool then
+				Player.ReplicatedData.primary.Value = CurseTool
 				Tool.Name = CurseTool
 				Tool.TextureId = Items[CurseTool] and Items[CurseTool].icon or ""
 			end
