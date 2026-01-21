@@ -1,5 +1,5 @@
 if identifyexecutor() == "Delta" then
-	getrenv().RunInDeltaUi = true
+	getrenv().RunInDeltaUi = readfile("TDM/DeltaUiEnabled") == "true"
 end
 queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/qian-cheng-awa/Jujutsu-Infinite/refs/heads/main/Main.lua"))
 
@@ -578,6 +578,29 @@ Tab:CreateToggle({
 })
 
 Tab = Window:CreateTab("自定义技能", "airplay")
+local Weapons = require(game:GetService("ReplicatedStorage").Dependencies.Weapons)
+local a = {}
+for i,_ in pairs(Weapons) do
+	table.insert(a,i)
+end
+local CurseTool
+Tab:CreateDropdown({
+	Name = "武器",
+	Options = a,
+	CurrentValue = nil,
+	Callback = function(Value)
+		CurseTool = unpack(Value)
+	end,
+})
+
+local ToggleCurseTool = false
+Tab:CreateToggle({
+	Name = "更改当前咒具",
+	CurrentValue = ToggleCurseTool,
+	Callback = function(Value)
+		ToggleCurseTool = Value
+	end,
+})
 
 Tab:CreateToggle({
 	Name = "技能工具",
@@ -774,7 +797,7 @@ local function getnearst(path:Instance)
 
 	return nearst
 end
-
+local Items = require(game:GetService("ReplicatedStorage").Dependencies.Items)
 game:GetService("RunService").RenderStepped:Connect(function(dt)
 	if FastSpin and not AutoSEC and not AutoBoss and not AutoInvestgations then
 		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Data"):WaitForChild("InnateSpin"):InvokeServer(tonumber(CurrentSlot.CurrentOption[1]))
@@ -787,6 +810,19 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			end
 		end
 	end
+	
+	if ToggleCurseTool and CurseTool then
+		local Equipped = Player.ReplicatedData.primary.Value
+		
+		if Equipped and Equipped ~= "" then
+			local Tool : Tool = Player.Backpack:FindFirstChild(Equipped) or Player.Character:FindFirstChild(Equipped)
+			if Tool then
+				Tool.Name = CurseTool
+				Tool.TextureId = Items[CurseTool] and Items[CurseTool].icon or ""
+			end
+		end
+	end
+	
 	for i,v in pairs(Cooldowns) do
 		Cooldowns[i] -= dt
 		if Cooldowns[i] <= 0 then
