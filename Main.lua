@@ -57,7 +57,7 @@ local Player = game:GetService("Players").LocalPlayer
 if Player.Backpack:FindFirstChild("TDMSkill") then
 	Player.Backpack:FindFirstChild("TDMSkill"):Destroy()
 end
-if Player.Character:FindFirstChild("TDMSkill") then
+if Player.Character and Player.Character:FindFirstChild("TDMSkill") then
 	Player.Character:FindFirstChild("TDMSkill"):Destroy()
 end
 
@@ -873,6 +873,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 					UseSkill("Domain Expansion: Unlimited Void")
 				end
 			end
+			AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
 		else
 			if AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.QTE) then
 				InHandQteTime = 10
