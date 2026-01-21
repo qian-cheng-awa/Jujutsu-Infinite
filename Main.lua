@@ -1,5 +1,5 @@
 if identifyexecutor() == "Delta" then
-	getrenv().RunInDeltaUi = readfile("TDM/DeltaUiEnabled") == "true"
+	getrenv().RunInDeltaUi = true
 end
 queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/qian-cheng-awa/Jujutsu-Infinite/refs/heads/main/Main.lua"))
 
