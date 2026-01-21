@@ -488,11 +488,12 @@ local AntiAfk = Tab:CreateToggle({
 	Callback = function(Value)
 	end,
 })
+
 local lootenabled = isfile(FilePath.."ShowLoot") and readfile(FilePath.."ShowLoot") == "true" or false
 LootUi.Enabled = lootenabled
 Tab:CreateToggle({
 	Name = "收益总览",
-	CurrentValue = ,
+	CurrentValue = LootUi,
 	Callback = function(Value)
 		writefile(FilePath.."ShowLoot", tostring(Value))
 		LootUi.Enabled = Value
@@ -525,9 +526,11 @@ Tab:CreateToggle({
 })
 
 local FastSEC = isfile(FilePath.."FastSEC") and readfile(FilePath.."FastSEC") == "true" or false
+
 if game.PlaceId == 10450270085 then
 	FastSEC = false
 end
+
 Tab:CreateToggle({
 	Name = "快速六眼",
 	CurrentValue = FastSEC,
