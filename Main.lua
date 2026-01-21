@@ -26,6 +26,27 @@ if AutoSEC then
 		end
 
 		return
+	elseif game.PlaceId == 100730147537810 then
+		repeat
+			task.wait()
+		until game.Loaded
+
+		while task.wait(1) do
+			pcall(function()
+				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Raids"):WaitForChild("CreateLobby"):InvokeServer("Boss","Six Eyed Calamity",1,"Medium","bxnb66")
+				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Raids"):WaitForChild("StartLobby"):InvokeServer("Boss")
+			end)
+		end
+
+		local CreateLobby = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Raids"):WaitForChild("CreateLobby")
+		local Start = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Raids"):WaitForChild("StartLobby")
+
+		if CreateLobby:InvokeServer("Boss","Six Eyed Calamity",1,"Medium","bxnb66") then
+			task.wait()
+			Start:InvokeServer("Boss")
+		end
+
+		return
 	elseif game.PlaceId == 16379657109 then
 		game:GetService("TeleportService"):Teleport(90925658700602,game:GetService("Players").LocalPlayer)
 	end
@@ -493,7 +514,7 @@ local lootenabled = isfile(FilePath.."ShowLoot") and readfile(FilePath.."ShowLoo
 LootUi.Enabled = lootenabled
 Tab:CreateToggle({
 	Name = "收益总览",
-	CurrentValue = LootUi,
+	CurrentValue = lootenabled,
 	Callback = function(Value)
 		writefile(FilePath.."ShowLoot", tostring(Value))
 		LootUi.Enabled = Value
@@ -840,14 +861,13 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 				local bosspos = SEC.Costume["UMesh_Skin_ZSphere_3.004"].Root.LowerTorso.UpperTorso["UpperTorso.001"]["UpperTorso.002"].WorldCFrame
 				Character:PivotTo(bosspos*CFrame.new(0,0,-50))
 				workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position,bosspos.Position)
-				UseSkill("Demon Vessel: Switch")
-				UseSkill("Maximum: True Sphere")
 				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ApplyBlackFlashToNextHitbox"):FireServer(2)
 				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("M2"):FireServer()
 				return
 			end
 			if game:GetService("ReplicatedStorage"):FindFirstChild("GlobalDomainMeter") then
 				if game:GetService("ReplicatedStorage"):FindFirstChild("GlobalDomainMeter").Value < 100 then
+					UseSkill("Demon Vessel: Switch")
 					UseSkill("Test Domain Malevolent")
 				else
 					UseSkill("Domain Expansion: Unlimited Void")
