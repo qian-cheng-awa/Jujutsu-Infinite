@@ -69,7 +69,7 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 local LocalizationService = game:GetService("LocalizationService")
 local KeyCodes = {"Z","X","C","V","B","G","T","Y"}
 
-local LootUi = game:GetService("Players").LocalPlayer.PlayerGui.Loot:Clone()
+local LootUi = Player.PlayerGui:WaitForChild("Loot"):Clone()
 LootUi.Parent = gethui()
 LootUi.Results.Visible = true
 LootUi.Frame:Destroy()
