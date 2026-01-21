@@ -816,7 +816,10 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 
 	if AutoSEC or AutoBoss or AutoInvestgations then
 		if not Character:FindFirstChild("Archored") then
-			Instance.new("BodyVelocity",Character).Name = "Archored"
+			local a = Instance.new("BodyVelocity",Character)
+			a.Name = "Archored"
+			a.Velocity = Vector3.new(0,0,0)
+			a.MaxForce = Vector3.new(1,1,1)*math.huge
 		end
 
 		Player.PlayerGui.Loot.Enabled = false
