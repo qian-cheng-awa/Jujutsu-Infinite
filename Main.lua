@@ -846,7 +846,7 @@ local function SECInStunned()
 	end
 end
 
-local fl = 0
+local fl = 1
 game:GetService("RunService").RenderStepped:Connect(function(dt)
 	fl += dt
 	
