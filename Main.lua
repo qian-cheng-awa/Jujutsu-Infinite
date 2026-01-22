@@ -110,8 +110,10 @@ local function UseSkill(Skill)
 
 	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("Skill"):FireServer(Skill)
 end
-
+local lastm1tick = tick()
 local function m1(Anim)
+	if tick() - lastm1tick < 0.3 then return end
+	lastm1tick = tick()
 	if typeof(Anim) ~= "table" then
 		Anim = {Anim}
 	end
