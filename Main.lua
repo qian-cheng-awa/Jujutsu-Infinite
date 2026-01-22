@@ -1025,6 +1025,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 					fl = 0
 					UseSkill("Toggle Shield")
 				end
+				AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
 			else
 				if Find(SECAnimations.Purple2) then
 					Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
