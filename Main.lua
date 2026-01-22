@@ -1,5 +1,5 @@
 if identifyexecutor() == "Delta" then
-	getrenv().RunInDeltaUi = true
+	getrenv().RunInDeltaUi = readfile("TDM/DeltaUiEnabled") == "true"
 end
 queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/qian-cheng-awa/Jujutsu-Infinite/refs/heads/main/Main.lua"))
 
@@ -111,9 +111,33 @@ local function UseSkill(Skill)
 	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("Skill"):FireServer(Skill)
 end
 
+local function m1(Anim)
+	if typeof(Anim) ~= "table" then
+		Anim = {Anim}
+	end
+
+	for _,v in pairs(Anim) do
+		if v and v:FindFirstChild("CombatAgent") and not v.CombatAgent.Statuses:FindFirstChild("InCutscene") then
+		else
+			table.remove(Anim,v)
+		end
+	end
+
+	if not Anim[1] then return end
+	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ChangeWeapon"):FireServer("Infinity Sorcerer")
+	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("M1"):FireServer(math.random(1,5),Anim)
+end
+
 local function BlackFlash()
 	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ApplyBlackFlashToNextHitbox"):FireServer(1)
 	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("M2"):FireServer()
+end
+
+local function InInfinityShield()
+	if workspace.Objects.Effects:FindFirstChild("SECCocoon") then
+		return true
+	end
+	return Player.Character and Player.Character:WaitForChild("Humanoid").CombatAgent.Statuses:FindFirstChild("InfinityShield")
 end
 
 local Slot = game:GetService("ReplicatedStorage").ReplicatedAssets.UI.SkillSlot
@@ -129,6 +153,7 @@ local Selected
 local function GetSkillIcon(Skill)
 	return Skill:FindFirstChild("Icon") and Skill.Icon.Value or ""
 end
+
 
 for _,v in ipairs(game:GetService("ReplicatedStorage").Skills:GetChildren()) do
 	local NewButton = ListButton:Clone()
@@ -443,10 +468,14 @@ Tab:CreateButton({
 	end,
 })
 
-Tab:CreateButton({
-	Name = "六眼灾难无限盾牌能量",
-	Callback = function()
-		FirstGlobal.shieldMeter = math.huge
+local SECShield = isfile(FilePath.."SECShield") and readfile(FilePath.."SECShield") == "true" or false
+
+Tab:CreateToggle({
+	Name = "无限六眼灾难护盾值",
+	CurrentValue = SECShield,
+	Callback = function(Value)
+		SECShield = Value
+		writefile(FilePath.."SECShield", tostring(Value))
 	end,
 })
 
@@ -545,6 +574,16 @@ Tab:CreateToggle({
 	Callback = function(Value)
 		writefile(FilePath.."AutoSEC", tostring(Value))
 		AutoSEC = Value
+	end,
+})
+
+local godmode = isfile(FilePath.."GodMode") and readfile(FilePath.."GodMode") == "true" or false
+Tab:CreateToggle({
+	Name = "六眼无敌",
+	CurrentValue = godmode,
+	Callback = function(Value)
+		godmode = Value
+		writefile(FilePath.."GodMode", tostring(Value))
 	end,
 })
 
@@ -683,6 +722,7 @@ Tab:CreateButton({
 
 local FastSpin = Tab:CreateToggle({
 	Name = "光速抽奖（选择的槽位）",
+	CurrentValue = false,
 	Callback = function(Value)
 	end,
 })
@@ -798,8 +838,19 @@ local function getnearst(path:Instance)
 	return nearst
 end
 local Items = require(game:GetService("ReplicatedStorage").Dependencies.Items)
+local function SECInStunned()
+	if SEC and SEC:FindFirstChild("Humanoid") and not SEC.Humanoid.CombatAgent.Statuses:FindFirstChild("Iframes") and SEC.Humanoid.CombatAgent.Statuses:FindFirstChild("Stunned") then
+		return true
+	else
+		return false
+	end
+end
+
+local fl = 0
 game:GetService("RunService").RenderStepped:Connect(function(dt)
-	if FastSpin and not AutoSEC and not AutoBoss and not AutoInvestgations then
+	fl += dt
+	
+	if FastSpin.CurrentValue and not AutoSEC and not AutoBoss and not AutoInvestgations then
 		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Data"):WaitForChild("InnateSpin"):InvokeServer(tonumber(CurrentSlot.CurrentOption[1]))
 	end
 	if KillAura then
@@ -810,7 +861,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			end
 		end
 	end
-	
+
 	if ToggleCurseTool and CurseTool then
 		local Equipped = Player.ReplicatedData.primary.Value
 		if Equipped and Equipped ~= "" and Equipped ~= CurseTool then
@@ -822,7 +873,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			end
 		end
 	end
-	
+
 	for i,v in pairs(Cooldowns) do
 		Cooldowns[i] -= dt
 		if Cooldowns[i] <= 0 then
@@ -850,6 +901,11 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 
 	SEC = workspace.Objects.Mobs:FindFirstChild("Six Eyed Calamity")
 	Character = Player.Character
+	
+	if SECShield or godmode then
+		FirstGlobal.shieldMeter = 100
+	end
+	
 	if not Character then return end
 
 	if AutoSEC or AutoBoss or AutoInvestgations then
@@ -897,13 +953,19 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 
 	if AutoSEC and SEC then
 		if FastSEC then
+			if not InInfinityShield() and fl >= .5+Player:GetNetworkPing() then
+				fl = 0
+				UseSkill("Toggle Shield")
+			end
 			local stun : AnimationTrack = Find(SECAnimations.Stun)
-			if (stun and stun.TimePosition >= 3 - Player:GetNetworkPing()) or Find(SECAnimations.Stun2) then
+			if (stun and stun.TimePosition >= 3 - Player:GetNetworkPing()) or Find(SECAnimations.Stun2) and SECInStunned() then
+				if InInfinityShield() then
+					UseSkill("Toggle Shield")
+				end
 				local bosspos = SEC.Costume["UMesh_Skin_ZSphere_3.004"].Root.LowerTorso.UpperTorso["UpperTorso.001"]["UpperTorso.002"].WorldCFrame
 				Character:PivotTo(bosspos*CFrame.new(0,0,-50))
 				workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position,bosspos.Position)
-				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ApplyBlackFlashToNextHitbox"):FireServer(2)
-				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("M2"):FireServer()
+				BlackFlash(SEC:FindFirstChild("Humanoid"))
 				return
 			end
 			if game:GetService("ReplicatedStorage"):FindFirstChild("GlobalDomainMeter") then
@@ -926,32 +988,65 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			elseif Player.Character:FindFirstChild("Infinity Shard") then
 				UseSkill("Drop Shard")
 			end
-
+			
+			
+			
 			local red : AnimationTrack = Find(SECAnimations.redcharge)
 			local purple : AnimationTrack = Find(SECAnimations.purple)
 			local stun : AnimationTrack = Find(SECAnimations.Stun)
 
-			if (stun and stun.TimePosition >= 3 - Player:GetNetworkPing()) or Find(SECAnimations.Stun2) then
+			if (stun and stun.TimePosition >= 3 - Player:GetNetworkPing()) or Find(SECAnimations.Stun2) and SECInStunned() then
+				if InInfinityShield() then
+					UseSkill("Toggle Shield")
+				end
 				local bosspos = SEC.Costume["UMesh_Skin_ZSphere_3.004"].Root.LowerTorso.UpperTorso["UpperTorso.001"]["UpperTorso.002"].WorldCFrame
 				Character:PivotTo(bosspos*CFrame.new(0,0,-50))
 				workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position,bosspos.Position)
 				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("Skill"):FireServer("Demon Vessel: Switch")
 
-				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ApplyBlackFlashToNextHitbox"):FireServer(2)
-				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("M2"):FireServer(2)
+				BlackFlash(SEC:FindFirstChild("Humanoid"))
 				return
-			elseif Find(SECAnimations.Purple2) then
-				Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
-				return
-			elseif red and red.TimePosition >= (4.5-Player:GetNetworkPing()) or Find(SECAnimations.redfire) then
-				Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
-				return
-			elseif purple and purple.TimePosition >= (5-Player:GetNetworkPing()) then
+			end
+			
+			if purple and purple.TimePosition >= (5-Player:GetNetworkPing()) then
 				for i,v in ipairs(workspace.Objects.Locations.PurpleCover:GetChildren()) do
 					if v.Transparency == 0 then
 						Character:PivotTo(v.CFrame)
 						return
 					end
+				end
+			end
+			
+			local handa : AnimationTrack = Find(SECAnimations.hand)
+			local HandQTE : AnimationTrack = Find(SECAnimations.HandQTEA)
+			
+			if godmode then
+				if not InInfinityShield() and fl >= .5+Player:GetNetworkPing() then
+					fl = 0
+					UseSkill("Toggle Shield")
+				end
+			else
+				if Find(SECAnimations.Purple2) then
+					Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
+					return
+				elseif red and red.TimePosition >= (4.5-Player:GetNetworkPing()) or Find(SECAnimations.redfire) then
+					Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
+					return
+				end
+				
+				if handa then
+					Combat:WaitForChild("Block"):FireServer(true)
+					Combat:WaitForChild("Block"):FireServer(false)
+				elseif HandQTE then
+					Character.HumanoidRootPart.Anchored = false
+					if InHandQteTime >= 7 then
+						AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
+					else
+						InHandQteTime += dt
+					end
+				elseif not handa and not HandQTE then
+					AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
+					InHandQteTime = 0
 				end
 			end
 
@@ -967,25 +1062,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 				end
 			end
 
-			local handa : AnimationTrack = Find(SECAnimations.hand)
-			local HandQTE : AnimationTrack = Find(SECAnimations.HandQTEA)
-
-			if handa then
-				Combat:WaitForChild("Block"):FireServer(true)
-				Combat:WaitForChild("Block"):FireServer(false)
-			elseif HandQTE then
-				Character.HumanoidRootPart.Anchored = false
-				if InHandQteTime >= 7 then
-					AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
-				else
-					InHandQteTime += dt
-				end
-			elseif not handa and not HandQTE then
-				AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
-				InHandQteTime = 0
-			end
-
-			if (Player.PlayerGui.Main.Frame.BottomMiddle:FindFirstChild("DomainBar") or Player.PlayerGui.Main.Frame.BottomLeft.DomainBar).TextLabel.Text:split(" ")[2] == "100%" then
+			if game:GetService("ReplicatedStorage"):FindFirstChild("GlobalDomainMeter") and game:GetService("ReplicatedStorage"):FindFirstChild("GlobalDomainMeter").Value >= 100 then
 				Combat:WaitForChild("Skill"):FireServer("Domain Expansion: Unlimited Void")
 				return
 			end
@@ -993,7 +1070,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			for i,Obj:Part in ipairs(workspace.Objects.Effects:GetChildren()) do
 				if Obj.Name == "SECEye" then
 					Obj:Destroy()
-				elseif Obj.Name == "SECBlueBurst" and not purple then
+				elseif Obj.Name == "SECBlueBurst" and not purple and not godmode then
 					local power:Part = workspace.Objects.Effects:FindFirstChild("SECEnergyImbue")
 					if Obj:FindFirstChild("Warning") and Obj.Warning.Enabled then
 						if (Obj.Position - Character:GetPivot().Position).Magnitude <= 100 then
@@ -1033,7 +1110,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			end
 		else
 			Character:PivotTo(workspace.Objects.Mobs:GetChildren()[1]:GetPivot())
-			BlackFlash()
+			m1(workspace.Objects.Mobs:GetChildren()[1]:FindFirstChild("Humanoid"))
 		end
 	elseif AutoInvestgations then
 		if not Character then return end
