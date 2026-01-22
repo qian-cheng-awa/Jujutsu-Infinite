@@ -1,5 +1,5 @@
 if identifyexecutor() == "Delta" then
-	getrenv().RunInDeltaUi = readfile("TDM/DeltaUiEnabled") == "true"
+	getrenv().RunInDeltaUi = true
 end
 queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/qian-cheng-awa/Jujutsu-Infinite/refs/heads/main/Main.lua"))
 
@@ -1108,7 +1108,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			if workspace.Objects.Spawns:FindFirstChild("BossSpawn") then
 				Character:PivotTo(workspace.Objects.Spawns.BossSpawn.CFrame)
 			end
-		else
+		elseif workspace.Objects.Mobs:GetChildren()[1]:FindFirstChild("Humanoid").Health > 0 then
 			Character:PivotTo(workspace.Objects.Mobs:GetChildren()[1]:GetPivot())
 			m1(workspace.Objects.Mobs:GetChildren()[1]:FindFirstChild("Humanoid"))
 		end
