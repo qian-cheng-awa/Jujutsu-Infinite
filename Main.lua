@@ -953,10 +953,6 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 
 	if AutoSEC and SEC then
 		if FastSEC then
-			if not InInfinityShield() and fl >= .5+Player:GetNetworkPing() then
-				fl = 0
-				UseSkill("Toggle Shield")
-			end
 			local stun : AnimationTrack = Find(SECAnimations.Stun)
 			if (stun and stun.TimePosition >= 3 - Player:GetNetworkPing()) or Find(SECAnimations.Stun2) and SECInStunned() then
 				if InInfinityShield() then
