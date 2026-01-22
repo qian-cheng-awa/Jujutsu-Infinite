@@ -849,7 +849,7 @@ end
 local fl = 1
 game:GetService("RunService").RenderStepped:Connect(function(dt)
 	fl += dt
-	
+
 	if FastSpin.CurrentValue and not AutoSEC and not AutoBoss and not AutoInvestgations then
 		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Data"):WaitForChild("InnateSpin"):InvokeServer(tonumber(CurrentSlot.CurrentOption[1]))
 	end
@@ -901,11 +901,11 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 
 	SEC = workspace.Objects.Mobs:FindFirstChild("Six Eyed Calamity")
 	Character = Player.Character
-	
+
 	if SECShield or godmode then
 		FirstGlobal.shieldMeter = 100
 	end
-	
+
 	if not Character then return end
 
 	if AutoSEC or AutoBoss or AutoInvestgations then
@@ -984,26 +984,26 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			elseif Player.Character:FindFirstChild("Infinity Shard") then
 				UseSkill("Drop Shard")
 			end
-			
-			
-			
+
+
+
 			local red : AnimationTrack = Find(SECAnimations.redcharge)
 			local purple : AnimationTrack = Find(SECAnimations.purple)
 			local stun : AnimationTrack = Find(SECAnimations.Stun)
 
 			if (stun and stun.TimePosition >= 3 - Player:GetNetworkPing()) or Find(SECAnimations.Stun2) and SECInStunned() then
-				if InInfinityShield() then
+				if InInfinityShield() and fl >= .5+Player:GetNetworkPing() then
+					fl = 0
 					UseSkill("Toggle Shield")
 				end
 				local bosspos = SEC.Costume["UMesh_Skin_ZSphere_3.004"].Root.LowerTorso.UpperTorso["UpperTorso.001"]["UpperTorso.002"].WorldCFrame
 				Character:PivotTo(bosspos*CFrame.new(0,0,-50))
 				workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position,bosspos.Position)
 				game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("Skill"):FireServer("Demon Vessel: Switch")
-
 				BlackFlash(SEC:FindFirstChild("Humanoid"))
 				return
 			end
-			
+
 			if purple and purple.TimePosition >= (5-Player:GetNetworkPing()) then
 				for i,v in ipairs(workspace.Objects.Locations.PurpleCover:GetChildren()) do
 					if v.Transparency == 0 then
@@ -1012,10 +1012,10 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 					end
 				end
 			end
-			
+
 			local handa : AnimationTrack = Find(SECAnimations.hand)
 			local HandQTE : AnimationTrack = Find(SECAnimations.HandQTEA)
-			
+
 			if godmode then
 				if not InInfinityShield() and fl >= .5+Player:GetNetworkPing() then
 					fl = 0
@@ -1030,7 +1030,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 					Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
 					return
 				end
-				
+
 				if handa then
 					Combat:WaitForChild("Block"):FireServer(true)
 					Combat:WaitForChild("Block"):FireServer(false)
@@ -1099,15 +1099,16 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			if #workspace.Objects.Drops:GetChildren() >= 1 then
 				return
 			end
-
 			game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("Skill"):FireServer("Demon Vessel: Switch")
 
 			if workspace.Objects.Spawns:FindFirstChild("BossSpawn") then
 				Character:PivotTo(workspace.Objects.Spawns.BossSpawn.CFrame)
 			end
+			UseSkill("Maximum: True Sphere")
 		elseif workspace.Objects.Mobs:GetChildren()[1]:FindFirstChild("Humanoid").Health > 0 then
 			Character:PivotTo(workspace.Objects.Mobs:GetChildren()[1]:GetPivot())
-			BlackFlash()
+			UseSkill("Maximum: True Sphere")
+			--BlackFlash()
 		end
 	elseif AutoInvestgations then
 		if not Character then return end
