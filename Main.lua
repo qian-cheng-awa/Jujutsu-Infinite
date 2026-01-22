@@ -110,10 +110,8 @@ local function UseSkill(Skill)
 
 	game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("Skill"):FireServer(Skill)
 end
-local lastm1tick = tick()
+
 local function m1(Anim)
-	if tick() - lastm1tick < 0.3 then return end
-	lastm1tick = tick()
 	if typeof(Anim) ~= "table" then
 		Anim = {Anim}
 	end
@@ -1113,7 +1111,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			end
 		elseif workspace.Objects.Mobs:GetChildren()[1]:FindFirstChild("Humanoid").Health > 0 then
 			Character:PivotTo(workspace.Objects.Mobs:GetChildren()[1]:GetPivot())
-			m1(workspace.Objects.Mobs:GetChildren()[1]:FindFirstChild("Humanoid"))
+			BlackFlash()
 		end
 	elseif AutoInvestgations then
 		if not Character then return end
