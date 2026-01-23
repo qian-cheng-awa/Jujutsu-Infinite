@@ -1015,7 +1015,12 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 
 			local handa : AnimationTrack = Find(SECAnimations.hand)
 			local HandQTE : AnimationTrack = Find(SECAnimations.HandQTEA)
-
+			
+			if Find(SECAnimations.Purple2) then
+				Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
+				return
+			end
+			
 			if godmode then
 				if not InInfinityShield() and fl >= .5+Player:GetNetworkPing() then
 					fl = 0
@@ -1023,10 +1028,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 				end
 				AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
 			else
-				if Find(SECAnimations.Purple2) then
-					Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
-					return
-				elseif red and red.TimePosition >= (4.5-Player:GetNetworkPing()) or Find(SECAnimations.redfire) then
+				if red and red.TimePosition >= (4.5-Player:GetNetworkPing()) or Find(SECAnimations.redfire) then
 					Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
 					return
 				end
