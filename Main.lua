@@ -437,7 +437,7 @@ local Tab : {
 } = Window:CreateTab("主要", "airplay")
 
 local godmode = isfile(FilePath.."GodMode") and readfile(FilePath.."GodMode") == "true" or false
-if game.PlaceId == 10450270085 then
+if game.PlaceId ~= 16379688837 then
 	godmode = false
 	writefile(FilePath.."GodMode", tostring(godmode))
 end
@@ -566,7 +566,7 @@ Tab:CreateToggle({
 })
 
 local AutoBoss = isfile(FilePath.."AutoBoss") and readfile(FilePath.."AutoBoss") == "true" or false
-if game.PlaceId == 10450270085 then
+if game.PlaceId ~= 16379688837 then
 	AutoBoss = false
 	writefile(FilePath.."AutoBoss", tostring(AutoBoss))
 end
@@ -579,7 +579,7 @@ Tab:CreateToggle({
 	end,
 })
 
-if game.PlaceId == 10450270085 then
+if game.PlaceId ~= 16379688837 then
 	AutoSEC = false
 	writefile(FilePath.."AutoSEC", tostring(AutoSEC))
 end
