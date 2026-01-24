@@ -847,6 +847,8 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 			UseSkill("Bloodlust")
 			UseSkill("Burn Scars V2: Destroy Everything")
 		end
+	elseif Character:FindFirstChild("ForceField") then
+		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ToggleMenu"):FireServer(false)
 	end
 
 	if FastSpin.CurrentValue and not AutoSEC and not AutoBoss and not AutoInvestgations then
