@@ -802,8 +802,6 @@ local function getnearstplayer(p)
 	return closestDistance
 end
 
-local InHandQteTime = 0
-
 local function getnearst(path:Instance)
 	local char = game.Players.LocalPlayer.Character
 	local hum = char:FindFirstChild("Humanoid")
@@ -953,10 +951,6 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 	end
 
 	if AutoSEC and SEC then
-		if AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.QTE) then
-			InHandQteTime = 10
-		end
-
 		if Player.Backpack:FindFirstChild("Infinity Shard") then
 			Character:FindFirstChild("Humanoid"):EquipTool(Player.Backpack["Infinity Shard"])
 			UseSkill("Drop Shard")
@@ -985,6 +979,8 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 
 
 
+		local handa : AnimationTrack = Find(SECAnimations.hand)
+		local HandQTE : AnimationTrack = Find(SECAnimations.HandQTEA)
 		if not godmode then
 			if purple and purple.TimePosition >= (5-Player:GetNetworkPing()) then
 				for i,v in ipairs(workspace.Objects.Locations.PurpleCover:GetChildren()) do
@@ -995,8 +991,6 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 				end
 			end
 
-			local handa : AnimationTrack = Find(SECAnimations.hand)
-			local HandQTE : AnimationTrack = Find(SECAnimations.HandQTEA)
 
 			if Find(SECAnimations.Purple2) then
 				Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
@@ -1006,21 +1000,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 				Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
 				return
 			end
-
-			if handa then
-				Combat:WaitForChild("Block"):FireServer(true)
-				Combat:WaitForChild("Block"):FireServer(false)
-			elseif HandQTE then
-				Character.HumanoidRootPart.Anchored = false
-				if InHandQteTime >= 7 then
-					AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
-				else
-					InHandQteTime += dt
-				end
-			elseif not handa and not HandQTE then
-				AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
-				InHandQteTime = 0
-			end
+			
 			if purple then
 				if #workspace.Objects.Locations.PurpleCover:GetChildren() > 0 then
 					for i,v in ipairs(workspace.Objects.Locations.PurpleCover:GetChildren()) do
@@ -1033,7 +1013,17 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 				end
 			end
 		end
-
+		
+		if handa then
+			Combat:WaitForChild("Block"):FireServer(true)
+			Combat:WaitForChild("Block"):FireServer(false)
+		elseif HandQTE then
+			Character.HumanoidRootPart.Anchored = false
+			AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
+		elseif not handa and not HandQTE then
+			AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
+		end
+		
 		if game:GetService("ReplicatedStorage"):FindFirstChild("GlobalDomainMeter") and game:GetService("ReplicatedStorage"):FindFirstChild("GlobalDomainMeter").Value >= 100 then
 			Combat:WaitForChild("Skill"):FireServer("Domain Expansion: Unlimited Void")
 			return
@@ -1042,7 +1032,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 		for i,Obj:Part in ipairs(workspace.Objects.Effects:GetChildren()) do
 			if Obj.Name == "SECEye" then
 				Obj:Destroy()
-			elseif Obj.Name == "SECBlueBurst" and not purple and not godmode then
+			elseif Obj.Name == "SECBlueBurst" and not purple then
 				local power:Part = workspace.Objects.Effects:FindFirstChild("SECEnergyImbue")
 				if Obj:FindFirstChild("Warning") and Obj.Warning.Enabled then
 					if (Obj.Position - Character:GetPivot().Position).Magnitude <= 100 then
@@ -1050,7 +1040,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 						Character:PivotTo(Obj.CFrame)
 						return
 					end
-				else
+				elseif not godmode then
 					Character:PivotTo(SEC:GetPivot()*CFrame.new(350,-150,50))
 					return
 				end
