@@ -1000,7 +1000,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 				Character:PivotTo(SEC:GetPivot()*CFrame.new(0,-50,300))
 				return
 			end
-			
+
 			if purple then
 				if #workspace.Objects.Locations.PurpleCover:GetChildren() > 0 then
 					for i,v in ipairs(workspace.Objects.Locations.PurpleCover:GetChildren()) do
@@ -1013,7 +1013,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 				end
 			end
 		end
-		
+
 		if handa then
 			Combat:WaitForChild("Block"):FireServer(true)
 			Combat:WaitForChild("Block"):FireServer(false)
@@ -1023,7 +1023,7 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 		elseif not handa and not HandQTE then
 			AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.DomainClash)
 		end
-		
+		AddUi(Player.PlayerGui.Main.Frame.BottomMiddle.QTE)
 		if game:GetService("ReplicatedStorage"):FindFirstChild("GlobalDomainMeter") and game:GetService("ReplicatedStorage"):FindFirstChild("GlobalDomainMeter").Value >= 100 then
 			Combat:WaitForChild("Skill"):FireServer("Domain Expansion: Unlimited Void")
 			return
