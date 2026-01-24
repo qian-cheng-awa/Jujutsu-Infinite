@@ -579,7 +579,7 @@ Tab:CreateToggle({
 	end,
 })
 
-if game.PlaceId ~= 16379688837 then
+if game.PlaceId ~= 16379688837 and game.PlaceId ~= 100730147537810 then
 	AutoSEC = false
 	writefile(FilePath.."AutoSEC", tostring(AutoSEC))
 end
