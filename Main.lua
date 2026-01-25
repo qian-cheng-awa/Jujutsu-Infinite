@@ -837,18 +837,7 @@ end
 local fl = 1
 game:GetService("RunService").RenderStepped:Connect(function(dt)
 	fl += dt
-
-	if godmode then
-		if not Character:FindFirstChild("ForceField") then
-			game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ToggleMenu"):FireServer(true)
-		elseif Character:FindFirstChild("HumanoidRootPart") and Character:FindFirstChild("HumanoidRootPart").Anchored then
-			UseSkill("Bloodlust")
-			UseSkill("Burn Scars V2: Destroy Everything")
-		end
-	elseif Character:FindFirstChild("ForceField") then
-		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ToggleMenu"):FireServer(false)
-	end
-
+	
 	if FastSpin.CurrentValue and not AutoSEC and not AutoBoss and not AutoInvestgations then
 		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Data"):WaitForChild("InnateSpin"):InvokeServer(tonumber(CurrentSlot.CurrentOption[1]))
 	end
@@ -904,8 +893,20 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
 	if SECShield then
 		FirstGlobal.shieldMeter = 100
 	end
-
+	
 	if not Character then return end
+	
+	if godmode then
+		if not Character:FindFirstChild("ForceField") then
+			game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ToggleMenu"):FireServer(true)
+		elseif Character:FindFirstChild("HumanoidRootPart") and Character:FindFirstChild("HumanoidRootPart").Anchored then
+			UseSkill("Bloodlust")
+			UseSkill("Burn Scars V2: Destroy Everything")
+		end
+	elseif Character:FindFirstChild("ForceField") then
+		game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Server"):WaitForChild("Combat"):WaitForChild("ToggleMenu"):FireServer(false)
+	end
+
 
 	if AutoSEC or AutoBoss or AutoInvestgations then
 		if not Character.PrimaryPart:FindFirstChild("Archored") then
